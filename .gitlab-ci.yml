@@ -1,0 +1,17 @@
+# CAVEAT: changing this file need to be approved by SRE team.
+
+include:
+  - project: 'SRE/ci-cd'
+    file: common.yml
+
+variables:
+  project: sre
+  application: arvan-s3-checker
+
+bake:
+  extends: .bake
+
+tools-deploy:
+  only:
+    - master
+  extends: .tools-deploy
