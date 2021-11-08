@@ -36,7 +36,7 @@ def put_object(bucket, object_name, filename):
         start_time = time.time()
         s3_client.upload_file(filename, bucket, object_name, ExtraArgs={'ACL': 'public-read', 'ContentType': 'image/jpeg'})
         end_time = time.time()
-        s3_latency.observe(end_time - start_time, {'method': 'put'})
+        s3_latency.labels(method="put").observe(end_time - start_time)
     except Exception as e:
         print(e)
         s3_errors.labels(error=str(e)).inc()
@@ -55,7 +55,7 @@ def get_object(bucket, object_name, original_filename):
         start_time = time.time()
         s3_client.download_file(bucket, object_name, output_filename)
         end_time = time.time()
-        s3_latency.observe(end_time - start_time, {'method': 'get'})
+        s3_latency.labels(method="get").observe(end_time - start_time, {'method': 'get'})
     except Exception as e:
         print(e)
         object_availability.set(0)
@@ -84,7 +84,7 @@ def delete_object(bucket, object_name):
         start_time = time.time()
         s3_client.delete_object(Bucket=bucket, Key=object_name)
         end_time = time.time()
-        s3_latency.observe(end_time - start_time, {'method': 'delete'})
+        s3_latency.labels(method="delete").observe(end_time - start_time, {'method': 'delete'})
     except Exception as e:
         print(e)
         s3_errors.labels(error=str(e)).inc()
