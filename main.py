@@ -105,8 +105,6 @@ if __name__ == "__main__":
             easy_timestamp = str(time.time()).split(".")[0]
             x = threading.Thread(target=check_availability_with_timestamp, args=(bucket_name, 'test-{}.jpg'.format(easy_timestamp), 'original.jpg'))
             x.start()
-            x.join()
-            break
             thread_list.append(x)
             time.sleep(10)
         except Exception as e:
