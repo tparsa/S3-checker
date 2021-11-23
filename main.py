@@ -5,20 +5,12 @@ import filecmp
 import time
 import threading
 
-import sentry_sdk
-from yekta_metrics import PrometheusClient
+from prometheus_client import start_http_server, Gauge, Counter, Histogram
 
 
-sentry_sdk.init(
-    "https://b61e6399acda4ac7ac7ffbf6deb1f69b@sentry.yektanet.tech/51",
-    traces_sample_rate=1.0
-)
-
-prom = PrometheusClient()
-
-object_availability = prom.gauge('s3_object_availability', "S3 object availability")
-s3_errors = prom.counter('s3_errors', "S3 errors", ("error",))
-s3_latency = prom.histogram('s3_latency', "S3 latency", ("method",))
+object_availability = Gauge('s3_object_availability', "S3 object availability")
+s3_errors = Counter('s3_errors', "S3 errors", ("error",))
+s3_latency = Histogram('s3_latency', "S3 latency", ("method",))
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -98,6 +90,8 @@ def check_availability_with_timestamp(bucket, object_name, original_filename):
 
 
 if __name__ == "__main__":
+    start_http_server(8000)
+    
     thread_list = []
     bucket_name = os.getenv("BUCKET_NAME")
     while True:
